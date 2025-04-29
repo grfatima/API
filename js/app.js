@@ -3,6 +3,7 @@ const uniCards = document.querySelector("#uniCards");
 const ixtisasCards = document.querySelector("#ixtisasCards");
 
 const showData = (url, parent) => {
+  parent.innerHTML = "";
   axios.get(ENDPOINT + url).then(({ data }) => {
     if (data && data.length > 0) {
       data.forEach(({ id, code, name }) => {
@@ -11,7 +12,7 @@ const showData = (url, parent) => {
                <h2>${code}</h2>
                 <p>${name}</p>
                </div>
-               <div><i class="fa-solid fa-trash trash"></i>
+               <div><i class="fa-solid fa-trash trash" onclick="deleteTrash('${id}' , '${url}')"></i>
                <i class="fa-solid fa-file-pen pen"></i></div>
               </div>`;
       });
@@ -23,6 +24,37 @@ const showData = (url, parent) => {
 
 showData("/university", uniCards);
 showData("/ixtisaslar", ixtisasCards);
+
+const deleteTrash = (id, url) => {
+  Swal.fire({
+    title: "Eminsiniz?",
+    text: "Silseniz bir daha geri qaytara bilmeyeceksiniz!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Beli, silinsin!",
+    cancelButtonText: "legv et",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios.delete(ENDPOINT + url + "/" + id).then((res) => {
+        if (res.status === 200) {
+          Swal.fire({
+            title: "Silindi!",
+            text: "Melumatlariniz silindi.",
+            icon: "success",
+          });
+
+          if (url === "/university") {
+            showData("/university", uniCards);
+          } else if (url === "/ixtisaslar") {
+            showData("/ixtisaslar", ixtisasCards);
+          }
+        }
+      });
+    }
+  });
+};
 
 // const getUniversitetler = () => {
 //   axios.get(ENDPOINT + "/university").then(({ data }) => {
