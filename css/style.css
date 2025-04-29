@@ -7,11 +7,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.container {
+.uniContainer,
+.ixtisasContainer {
   margin: 8% 5% 0 5%;
 
   h1 {
-    color: red;
+    color: rgb(255, 0, 0);
     font-weight: 200;
     padding-bottom: 20px;
   }
@@ -23,8 +24,8 @@ body {
     font-weight: lighter;
   }
   p {
-    color: rgba(0, 0, 0, 0.512);
     font-size: 20px;
+    color: rgba(0, 0, 0, 0.512);
   }
 }
 
@@ -36,13 +37,14 @@ body {
   .card {
     padding: 20px;
     transition: 0.5s;
-    border: 2px solid red;
+    border: 2px solid rgba(255, 0, 0, 0.602);
   }
+}
+
+.card:hover h2 {
+  color: green;
 }
 
 .card:hover {
   border: 2px solid green;
-}
-.card:hover h2 {
-  color: green;
 }
