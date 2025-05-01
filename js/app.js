@@ -1,7 +1,12 @@
 const ENDPOINT = "http://localhost:3000";
 const uniCards = document.querySelector("#uniCards");
+const addNewCode = document.querySelector("#addNewCode");
+const addNewName = document.querySelector("#addNewName");
 const ixtisasCards = document.querySelector("#ixtisasCards");
+const addNewUsersForm = document.querySelector("#addNewUsersForm");
+const addNewUsersSelect = document.querySelector("#addNewUsersSelect");
 
+// get
 const showData = (url, parent) => {
   parent.innerHTML = "";
   axios.get(ENDPOINT + url).then(({ data }) => {
@@ -13,7 +18,7 @@ const showData = (url, parent) => {
                 <p>${name}</p>
                </div>
                <div><i class="fa-solid fa-trash trash" onclick="deleteTrash('${id}' , '${url}')"></i>
-               <i class="fa-solid fa-file-pen pen"></i></div>
+               <i class="fa-solid fa-file-pen pen" onclick="editPen('${id}' , '${url}')"></i></div>
               </div>`;
       });
     } else {
@@ -25,6 +30,7 @@ const showData = (url, parent) => {
 showData("/university", uniCards);
 showData("/ixtisaslar", ixtisasCards);
 
+// delete
 const deleteTrash = (id, url) => {
   Swal.fire({
     title: "Eminsiniz?",
@@ -56,34 +62,50 @@ const deleteTrash = (id, url) => {
   });
 };
 
-// const getUniversitetler = () => {
-//   axios.get(ENDPOINT + "/university").then(({ data }) => {
-//     if (data && data.length > 0) {
-//       data.forEach(({ id, code, name }) => {
-//         uniCards.innerHTML += ` <div class="card">
-//             <h2>${code}</h2>
-//             <p>${name}</p>
-//           </div>`;
-//       });
-//     } else {
-//       uniCards.innerHTML = "Universitet siyahisi tapilmadi.";
-//     }
-//   });
-// };
-// getUniversitetler();
+// add
+addNewUsersForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-// const getIxtisaslar = () => {
-//   axios.get(ENDPOINT + "/ixtisaslar").then(({ data }) => {
-//     if (data && data.length) {
-//       data.forEach(({ id, code, name }) => {
-//         ixtisasCards.innerHTML += `  <div class="card">
-//                 <h2>${code}</h2>
-//                 <p>${name}</p>
-//               </div>`;
-//       });
-//     } else {
-//       ixtisasCards.innerHTML = "Ixtisas siyahisi tapilmadi.";
-//     }
-//   });
-// };
-// getIxtisaslar();
+  const newUser = {
+    code: addNewCode.value,
+    name: addNewName.value,
+  };
+
+  const url = addNewUsersSelect.value == 0 ? "/university" : "/ixtisaslar";
+  const parent = addNewUsersSelect.value == 0 ? uniCards : ixtisasCards;
+
+  axios.post(ENDPOINT + url, newUser).then((res) => {
+    addNewCode.value = "";
+    addNewName.value = "";
+    addNewCode.focus();
+
+    showData(url, parent);
+  });
+});
+
+// edit
+const editPen = (id, url) => {
+  axios.get(ENDPOINT + url + "/" + id).then(({ data }) => {
+    const newCode = prompt("Yenisini qeyd edin.", data.code);
+
+    if (newCode === null) return;
+
+    const newName = prompt("", data.name);
+
+    if (newCode) {
+      const newData = {
+        code: newCode,
+        name: newName,
+      };
+
+      axios.put(ENDPOINT + url + "/" + id, newData).then((res) => {
+        if (res.status === 200) {
+          const parent = addNewUsersSelect.value == 0 ? uniCards : ixtisasCards;
+
+          showData(url, parent);
+        } else {
+        }
+      });
+    }
+  });
+};
